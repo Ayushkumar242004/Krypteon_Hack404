@@ -11,7 +11,7 @@
 
 
 
-# about Krypteon
+# About Krypteon
 
 Krypteon is a full-stack application that allows developers to **analyze, audit, and visualize vulnerabilities in Solidity smart contracts**.  
 It combines a **Next.js frontend** for an intuitive UI with a **FastAPI backend** for AI-driven vulnerability detection and analysis.
