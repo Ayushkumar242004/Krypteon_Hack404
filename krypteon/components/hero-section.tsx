@@ -14,12 +14,13 @@ export function HeroSection() {
         <Image
           src="/logo.png"
           alt="Krypteon Logo"
-          width={200} // Set a fixed width
-          height={200} // Set a fixed height
-          className="opacity-60 drop-shadow-lg"
+          width={1000}
+          height={1000}
+          className="opacity-5 drop-shadow-lg -translate-y-20"
           priority
         />
       </div>
+
 
       {/* Content with better visibility */}
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 z-20">
@@ -27,10 +28,10 @@ export function HeroSection() {
           {/* Badge */}
           <Badge 
             variant="secondary" 
-            className="mb-6 text-sm font-medium bg-primary/10 border-primary/20 text-foreground backdrop-blur-sm"
+            className="mb-6 text-sm font-medium bg-primary/10 border-primary/20 text-foreground "
           >
             <Zap className="w-3 h-3 mr-1" />
-            AI-Powered Security Analysis
+            AI-Powered Contract Auditor
           </Badge>
 
           {/* Main heading */}
@@ -44,7 +45,7 @@ export function HeroSection() {
           </h1>
 
           {/* Description */}
-          <p className="text-xl text-muted-foreground text-balance mb-8 max-w-2xl mx-auto leading-relaxed backdrop-blur-sm bg-background/30 rounded-lg px-4 py-2">
+          <p className="text-xl text-muted-foreground text-balance mb-8 max-w-2xl mx-auto leading-relaxed rounded-lg px-4 py-2">
             Advanced AI detection for vulnerabilities, inefficiencies, and best practices. 
             Secure your Web3 projects with comprehensive smart contract analysis.
           </p>
@@ -72,7 +73,7 @@ export function HeroSection() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto backdrop-blur-sm bg-background/30 rounded-2xl p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto rounded-2xl p-6">
             {[{
                  value: "99.9%", label: "Vulnerability Detection"
                },

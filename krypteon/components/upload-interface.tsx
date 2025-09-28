@@ -15,8 +15,9 @@ import axios from "axios"
 import { useToast } from "../components/ui/use-toast"
 import { Github } from 'lucide-react';
 
+import { AnalysisProgress } from "./analysis-progress"
 export function UploadInterface() {
-  const [uploadMethod, setUploadMethod] = useState<"file" | "editor" | "address" | "github">("file")
+  const [uploadMethod, setUploadMethod] = useState<"file" | "editor" | "address" | "github">("github")
   const [files, setFiles] = useState<File[]>([])
   const [code, setCode] = useState("")
   const [contractName, setContractName] = useState("")
@@ -173,7 +174,7 @@ export function UploadInterface() {
     const startTime = Date.now();
     console.log("3");
     const formData = new FormData()
-    
+     setAnalysisProgress(10)
     if (uploadMethod === "file" && files.length > 0) {
       formData.append("file", files[0])
       console.log("4");
@@ -205,6 +206,7 @@ export function UploadInterface() {
       const blob = new Blob([fetchedSource], { type: "text/plain" })
       formData.append("file", blob, "contract.sol")
     }
+     setAnalysisProgress(25)
     console.log("5");
   
     try {
@@ -213,11 +215,11 @@ export function UploadInterface() {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        
+         
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            setAnalysisProgress(percentCompleted)
+            setAnalysisProgress(50)
             setCurrentStep(`Uploading file: ${percentCompleted}%...`)
           }
         },
@@ -230,15 +232,17 @@ export function UploadInterface() {
         elapsedTimeMinutes > 0
           ? `${elapsedTimeMinutes} min ${elapsedTimeSeconds % 60}s`
           : `${elapsedTimeSeconds} sec`
-  
+       setAnalysisProgress(75)
       // Store data in sessionStorage and navigate
       sessionStorage.setItem("analysisResult", JSON.stringify(response.data))
+      setAnalysisProgress(100)
       sessionStorage.setItem(
         "contractName",
         uploadMethod === "file" && files.length > 0 ? files[0].name : "contract.sol"
       )
       sessionStorage.setItem("analysisTime", elapsedTimeDisplay)
       console.log("6");
+      
       window.location.href = "/results"
     } catch (error) {
       console.log("7");
@@ -256,6 +260,19 @@ export function UploadInterface() {
     }
   }, [files, uploadMethod, code, fetchedSource, toast])
   
+  if (isAnalyzing) {
+    return (
+      <AnalysisProgress
+        analysisState={{
+          isAnalyzing,
+          progress: analysisProgress,
+          currentStep,
+          completed: analysisStatus === "completed",
+        }}
+      />
+    )
+  }
+
   const canAnalyze =
     (uploadMethod === "file" && files.length > 0) ||
     (uploadMethod === "editor" && code.trim().length > 0) ||
