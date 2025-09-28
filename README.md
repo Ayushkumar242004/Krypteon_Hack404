@@ -1,4 +1,17 @@
-# 🔐 Krypteon — Smart Contract Security Analyzer
+<div align="center">
+
+<img src="/krypteon/public/logo.png" alt=" Logo" width="120"/>
+
+# *Krypteon*
+### ✨ AI-Powered Smart Contract Auditor ✨
+
+
+
+</div>
+
+
+
+# about Krypteon
 
 Krypteon is a full-stack application that allows developers to **analyze, audit, and visualize vulnerabilities in Solidity smart contracts**.  
 It combines a **Next.js frontend** for an intuitive UI with a **FastAPI backend** for AI-driven vulnerability detection and analysis.
