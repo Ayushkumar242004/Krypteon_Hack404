@@ -4,6 +4,7 @@ import { Shield, AlertTriangle, CheckCircle, XCircle, TrendingUp, Zap, FileText,
 import { Badge } from "../components/ui/badge"
 import { Button } from "../components/ui/button"
 import { useState } from 'react'
+import ReactMarkdown from "react-markdown";
 
 interface AnalysisData {
   issues: any[];
@@ -71,7 +72,6 @@ const [loadingExplanation, setLoadingExplanation] = useState<{[key: number]: boo
 // Learn More function
 const fetchExplanation = async (index: number, snippet: string) => {
   setLoadingExplanation(prev => ({ ...prev, [index]: true }));
-  console.log("1");
   try {
     const response = await fetch('http://localhost:8000/api/explain-issue', {
       method: 'POST',
@@ -80,18 +80,18 @@ const fetchExplanation = async (index: number, snippet: string) => {
       },
       body: JSON.stringify({ codeSnippet: snippet }),
     });
-    console.log("response", response);
-    console.log("2");
+
     if (!response.ok) {
       throw new Error('Failed to fetch explanation');
     }
-    console.log("3");
+
     const data = await response.json();
+
+    // Store Markdown string in state
     setExplanations(prev => ({ 
       ...prev, 
       [index]: data.explanation 
     }));
-    console.log("4");
   } catch (error) {
     console.error('Error fetching explanation:', error);
     setExplanations(prev => ({ 
@@ -102,6 +102,7 @@ const fetchExplanation = async (index: number, snippet: string) => {
     setLoadingExplanation(prev => ({ ...prev, [index]: false }));
   }
 };
+
   // No longer deriving displayData locally, use data prop directly
   return (
     <div className="space-y-6">
@@ -237,9 +238,11 @@ const fetchExplanation = async (index: number, snippet: string) => {
             
             {/* Explanation Section */}
             {hasExplanation && (
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h5 className="font-medium mb-2 text-blue-900">Recommendations</h5>
-                <p className="text-sm text-blue-800 whitespace-pre-wrap">{explanations[index]}</p>
+              <div className="p-4 bg-slate-50/60 rounded-lg border border-blue-200">
+                <h5 className="font-bold text-500 mb-2 text-[#1E2939]">Recommendations</h5>
+                <div className="text-sm text-[#1E2939]">
+                  <ReactMarkdown>{explanations[index]}</ReactMarkdown>
+                </div>
               </div>
             )}
             

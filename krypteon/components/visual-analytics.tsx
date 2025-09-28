@@ -15,6 +15,19 @@ interface AnalysisData {
   };
 }
 
+interface AuditReportDisplayData {
+  contractName: string;
+  analysisDate: string;
+  securityScore: number;
+  totalIssues: number;
+  highRisk: number;
+  mediumRisk: number;
+  lowRisk: number;
+  gasEfficiency: number;
+  codeQuality: number;
+  analysisTime: string;
+}
+
 interface VisualAnalyticsProps {
   data: AnalysisData | null;
 }
