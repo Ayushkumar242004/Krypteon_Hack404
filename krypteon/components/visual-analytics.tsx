@@ -15,6 +15,8 @@ interface AnalysisData {
   };
 }
 
+
+
 interface AuditReportDisplayData {
   contractName: string;
   analysisDate: string;
@@ -54,6 +56,20 @@ export function VisualAnalytics({ data }: VisualAnalyticsProps) {
   const gasEfficiency = 0 // Not provided by API, defaulting
   const codeQuality = 0 // Not provided by API, defaulting
 
+    const summary = data?.summary;
+  const auditData: AuditReportDisplayData = {
+    // contractName: contractName, // Use the prop directly
+    analysisDate: new Date().toLocaleDateString(),
+    securityScore: calculateSecurityScore(summary?.High || 0, summary?.Medium || 0, summary?.Low || 0),
+    totalIssues: summary?.total || 0,
+    highRisk: summary?.High || 0,
+    mediumRisk: summary?.Medium || 0,
+    lowRisk: summary?.Low || 0,
+    gasEfficiency: Math.max(0, 100 - (summary?.total || 0) * 2), // New calculation
+    codeQuality: summary ? Math.max(0, 100 - (summary.total * 1.5)) : 0, // Existing heuristic
+    // analysisTime: analysisTime, // Use the prop directly
+  }
+
   const riskDistribution = [
     { name: "High Risk", value: highRisk, color: "bg-destructive" },
     { name: "Medium Risk", value: mediumRisk, color: "bg-yellow-500" },
@@ -62,8 +78,8 @@ export function VisualAnalytics({ data }: VisualAnalyticsProps) {
 
   const securityMetrics = [
     { name: "Security Score", value: securityScore, max: 100, color: "bg-primary" },
-    { name: "Gas Efficiency", value: gasEfficiency, max: 100, color: "bg-green-500" },
-    { name: "Code Quality", value: codeQuality, max: 100, color: "bg-blue-500" },
+    { name: "Gas Efficiency", value: auditData.gasEfficiency, max: 100, color: "bg-primary" },
+    { name: "Code Quality", value: auditData.codeQuality, max: 100, color: "bg-primary" },
   ]
 
   return (
@@ -124,9 +140,7 @@ export function VisualAnalytics({ data }: VisualAnalyticsProps) {
               </div>
               <div className="relative">
                 <Progress value={metric.value} className="h-3" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className={`h-1 ${metric.color} rounded-full`} style={{ width: `${metric.value}%` }} />
-                </div>
+                
               </div>
             </div>
           ))}

@@ -220,7 +220,7 @@ export function UploadInterface() {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
             setAnalysisProgress(50)
-            setCurrentStep(`Uploading file: ${percentCompleted}%...`)
+            setCurrentStep(`Uploading file...`)
           }
         },
       })
