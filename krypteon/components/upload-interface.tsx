@@ -17,7 +17,7 @@ import { Github } from 'lucide-react';
 
 import { AnalysisProgress } from "./analysis-progress"
 export function UploadInterface() {
-  const [uploadMethod, setUploadMethod] = useState<"file" | "editor" | "address" | "github">("file")
+  const [uploadMethod, setUploadMethod] = useState<"file" | "editor" | "address" | "github">("github")
   const [files, setFiles] = useState<File[]>([])
   const [code, setCode] = useState("")
   const [contractName, setContractName] = useState("")
@@ -386,7 +386,7 @@ export function UploadInterface() {
               <select
                 value={addressNetwork}
                 onChange={(e) => setAddressNetwork(e.target.value)}
-                className="w-full p-3 rounded-lg border border-border focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full p-3 rounded-lg border bg-[#090909] border-border focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="mainnet">Mainnet</option>
                 <option value="goerli">Goerli</option>
@@ -473,7 +473,7 @@ export function UploadInterface() {
                         className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                           selectedFile === file.path 
                             ? 'bg-blue-50 border-blue-200' 
-                            : 'hover:bg-gray-50'
+                            : 'hover:bg-gray-50/10'
                         }`}
                         onClick={() => handleFileSelect(file.path)}
                       >

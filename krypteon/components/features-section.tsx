@@ -12,7 +12,7 @@ const features = [
     icon: Globe,
     title: "Web3 Verification",
     description:
-      "Verify deployed contracts on Ethereum and Solana networks with bytecode comparison and dependency analysis.",
+      "Verify deployed contracts on Ethereum, Georli and Solana networks.",
   },
   {
     icon: Zap,

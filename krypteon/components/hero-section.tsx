@@ -14,8 +14,8 @@ export function HeroSection() {
         <Image
           src="/logo.png"
           alt="Krypteon Logo"
-          width={1000}
-          height={1000}
+          width={800}
+          height={800}
           className="opacity-5 drop-shadow-lg -translate-y-20"
           priority
         />
@@ -45,8 +45,8 @@ export function HeroSection() {
           </h1>
 
           {/* Description */}
-          <p className="text-xl text-muted-foreground text-balance mb-8 max-w-2xl mx-auto leading-relaxed rounded-lg px-4 py-2">
-            Advanced AI detection for vulnerabilities, inefficiencies, and best practices. 
+          <p className="text-lg text-muted-foreground text-balance mb-8 max-w-2xl mx-auto leading-relaxed rounded-lg px-4 py-2">
+            Advanced AI detection for vulnerabilities, inefficiencies, and best practices.<br/>
             Secure your Web3 projects with comprehensive smart contract analysis.
           </p>
 
@@ -73,7 +73,7 @@ export function HeroSection() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto rounded-2xl p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-14 max-w-3xl mx-auto rounded-2xl p-6">
             {[{
                  value: "99.9%", label: "Vulnerability Detection"
                },
