@@ -136,6 +136,19 @@ const fetchExplanation = async (index: number, snippet: string) => {
               </div>
             </div>
           </div>
+
+          <div className="prose prose-sm max-w-none">
+            <p className="text-muted-foreground leading-relaxed">
+              This audit report presents a comprehensive security analysis of the {data?.contractName || "N/A"} smart contract.
+              Our AI-powered analysis identified {data?.totalIssues || 0} total issues across various severity levels, with a
+              focus on security vulnerabilities, gas optimization opportunities, and code quality improvements.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              The contract demonstrates a security score of {data?.securityScore || 0}/100, indicating good security practices
+              with room for improvement. Critical attention should be given to the {data?.highRisk || 0} high-risk
+              vulnerabilities identified, which require immediate remediation to ensure contract safety.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
@@ -182,14 +195,37 @@ const fetchExplanation = async (index: number, snippet: string) => {
       const isPatched = showPatchedCode[index];
       const codeToShow = isPatched ? patchedCode[index] : issue.snippet;
       const hasExplanation = explanations[index];
-
+      
+      const borderColorClass = issue.severity === "High" ? "border-destructive"
+        : issue.severity === "Medium" ? "border-yellow-500"
+          : "border-blue-500"
+      const titleColorClass = issue.severity === "High" ? "text-destructive"
+        : issue.severity === "Medium" ? "text-yellow-600"
+          : "text-blue-600"
+      const iconComponent = issue.severity === "High" ? <XCircle className="w-5 h-5 text-destructive" />
+        : issue.severity === "Medium" ? <AlertTriangle className="w-5 h-5 text-yellow-500" />
+          : <CheckCircle className="w-5 h-5 text-blue-500" />
       return (
-        <Card key={index} className="border-l-4 border-blue-500">
+        <Card key={index} className={`border-l-4 ${borderColorClass}`}>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">{issue.title || "Unknown Vulnerability"}</CardTitle>
-              <Badge variant="secondary">{issue.severity} Risk</Badge>
+              <div className="flex items-center gap-2">
+                {iconComponent}
+                <CardTitle className={`text-lg ${titleColorClass}`}>
+                  {issue.analysis?.title || issue.kb_hits?.[0]?.title || issue.suggestion?.natural_language?.split('\n')[0] || "Unknown Vulnerability"}
+                </CardTitle>
+              </div>
+              <Badge 
+                className={issue.severity === "Low" ? "bg-blue-500 text-white" : ""}
+                variant={issue.severity === "High" ? "destructive" : "outline"}
+              >
+                {issue.severity} Risk
+              </Badge>
+
             </div>
+            <CardDescription className="flex items-center gap-2 mt-1">
+              Line {issue.function_line} <span className="mx-2">•</span> {issue.kb_hits?.[0]?.title || "General"}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>

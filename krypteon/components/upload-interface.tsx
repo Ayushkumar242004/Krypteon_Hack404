@@ -17,7 +17,7 @@ import { Github } from 'lucide-react';
 
 import { AnalysisProgress } from "./analysis-progress"
 export function UploadInterface() {
-  const [uploadMethod, setUploadMethod] = useState<"file" | "editor" | "address" | "github">("github")
+  const [uploadMethod, setUploadMethod] = useState<"file" | "editor" | "address" | "github">("file")
   const [files, setFiles] = useState<File[]>([])
   const [code, setCode] = useState("")
   const [contractName, setContractName] = useState("")

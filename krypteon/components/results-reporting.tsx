@@ -189,14 +189,7 @@ const handleDownloadPDF = async () => {
           <p className="text-muted-foreground">Comprehensive security analysis report for {auditData.contractName}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Eye className="w-4 h-4 mr-2" />
-            Preview
-          </Button>
-          <Button variant="outline" size="sm">
-            <Share className="w-4 h-4 mr-2" />
-            Share
-          </Button>
+          
            <Button size="sm" onClick={handleDownloadPDF} disabled={loading}>
       {loading ? (
         <>
