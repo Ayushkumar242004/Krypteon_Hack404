@@ -28,8 +28,11 @@ load_dotenv()
 
 
 import google.generativeai as genai
-app = FastAPI()
-
+app = FastAPI(title="CrewAI-RAG Solidity Analyzer (Improved)")
+origins = [
+    "*",
+  
+]
 # Fetch Gemini API Key from .env
 API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
@@ -75,6 +78,106 @@ if not os.path.exists(VULN_INDEX_PATH) or not os.path.exists(VULN_META_PATH):
 index = faiss.read_index(VULN_INDEX_PATH)
 with open(VULN_META_PATH, "r", encoding="utf-8") as f:
     meta = json.load(f)
+
+
+    
+import requests
+import base64
+from urllib.parse import urlparse
+import os
+from fastapi import HTTPException
+
+
+
+
+class GithubRepoRequest(BaseModel):
+    repoUrl: str
+
+
+@app.post("/api-github-repo-files")
+async def get_github_repo_files(req: GithubRepoRequest):
+    try:
+        # Parse GitHub URL
+        parsed_url = urlparse(req.repoUrl)
+        path_parts = parsed_url.path.strip("/").split("/")
+
+        if len(path_parts) < 2:
+            raise HTTPException(status_code=400, detail="Invalid GitHub URL")
+
+        owner = path_parts[0]
+        repo = path_parts[1]
+
+        headers = {}
+        github_token = os.getenv("GITHUB_TOKEN")
+        if github_token:
+            headers["Authorization"] = f"token {github_token}"
+
+        # 1️⃣ Get repository info to find the default branch
+        repo_info_url = f"https://api.github.com/repos/{owner}/{repo}"
+        repo_resp = requests.get(repo_info_url, headers=headers)
+        if repo_resp.status_code != 200:
+            raise HTTPException(
+                status_code=repo_resp.status_code,
+                detail="Failed to fetch repository info",
+            )
+
+        default_branch = repo_resp.json().get("default_branch", "main")
+
+        # 2️⃣ Fetch repository tree using the default branch
+        tree_url = (
+            f"https://api.github.com/repos/{owner}/{repo}/git/trees/"
+            f"{default_branch}?recursive=1"
+        )
+        response = requests.get(tree_url, headers=headers)
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail="Failed to fetch repository structure",
+            )
+
+        repo_data = response.json()
+        solidity_files = []
+
+        # Filter for .sol files
+        for item in repo_data.get("tree", []):
+            if item["type"] == "blob" and item["path"].endswith(".sol"):
+                solidity_files.append(
+                    {
+                        "path": item["path"],
+                        "name": item["path"].split("/")[-1],
+                        "url": item["url"],
+                    }
+                )
+
+        # 3️⃣ Fetch content for each Solidity file
+        files_with_content = []
+        for file in solidity_files[:50]:  # Limit to first 50 files
+            try:
+                file_response = requests.get(file["url"], headers=headers)
+                if file_response.status_code == 200:
+                    file_data = file_response.json()
+                    if file_data.get("content"):
+                        content = base64.b64decode(file_data["content"]).decode("utf-8")
+                        files_with_content.append(
+                            {
+                                "name": file["name"],
+                                "path": file["path"],
+                                "content": content,
+                            }
+                        )
+            except Exception as e:
+                print(f"Error fetching file {file['path']}: {str(e)}")
+                # Continue even if a single file fails
+
+        return {"files": files_with_content}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error processing repository: {str(e)}"
+        )
+
 
 # -----------------------
 # Helpers
@@ -592,11 +695,7 @@ from typing import Dict, Any
 
 
 from fastapi.middleware.cors import CORSMiddleware
-app = FastAPI(title="CrewAI-RAG Solidity Analyzer (Improved)")
-origins = [
-    "*",
-  
-]
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -1131,44 +1230,3 @@ Please structure your response in a clear, organized manner.
 
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
-    
-import requests, os
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from urllib.parse import urlparse
-
-app = FastAPI()
-
-class GithubRepoRequest(BaseModel):
-    repoUrl: str
-
-@app.post("/api/github/solidity-files")
-async def get_sol_files(req: GithubRepoRequest):
-    parsed_url = urlparse(req.repoUrl)
-    parts = parsed_url.path.strip('/').split('/')
-    if len(parts) < 2:
-        raise HTTPException(status_code=400, detail="Invalid GitHub URL")
-    owner, repo = parts[:2]
-
-    headers = {}
-    token = os.getenv("GITHUB_TOKEN")
-    if token:
-        headers["Authorization"] = f"token {token}"
-
-    def fetch_dir(path=""):
-        url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
-        r = requests.get(url, headers=headers)
-        if r.status_code != 200:
-            raise HTTPException(status_code=r.status_code, detail="Failed to fetch")
-        data = r.json()
-        files = []
-        for item in data:
-            if item["type"] == "file" and item["name"].endswith(".sol"):
-                # download_url gives raw text directly
-                content = requests.get(item["download_url"]).text
-                files.append({"name": item["name"], "path": item["path"], "content": content})
-            elif item["type"] == "dir":
-                files.extend(fetch_dir(item["path"]))
-        return files
-
-    return {"files": fetch_dir()}

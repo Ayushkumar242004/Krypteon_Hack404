@@ -98,7 +98,7 @@ export function UploadInterface() {
     setLoadingRepo(true);
     try {
       console.log("1");
-      const response = await fetch('http://localhost:8000/api/github/repo-files', {
+      const response = await fetch('http://localhost:8000/api-github-repo-files', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -266,6 +266,14 @@ export function UploadInterface() {
     <div className="space-y-6">
       <Tabs value={uploadMethod} onValueChange={(value) => setUploadMethod(value as any)}>
         <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="github" className="flex items-center gap-2">
+            <Github className="w-4 h-4" /> 
+            Connect via GitHub
+          </TabsTrigger>
+           <TabsTrigger value="address" className="flex items-center gap-2">
+            <Link className="w-4 h-4" />
+            Connect via Contract
+          </TabsTrigger>
           <TabsTrigger value="file" className="flex items-center gap-2">
             <Upload className="w-4 h-4" />
             File Upload
@@ -274,14 +282,8 @@ export function UploadInterface() {
             <FileCode className="w-4 h-4" />
             Code Editor
           </TabsTrigger>
-          <TabsTrigger value="address" className="flex items-center gap-2">
-            <Link className="w-4 h-4" />
-            Connect via Contract
-          </TabsTrigger>
-          <TabsTrigger value="github" className="flex items-center gap-2">
-            <Github className="w-4 h-4" /> 
-            Connect via GitHub
-          </TabsTrigger>
+         
+          
         </TabsList>
 
         {/* File Upload Tab */}
